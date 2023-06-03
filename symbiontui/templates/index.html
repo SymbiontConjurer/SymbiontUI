@@ -5,6 +5,14 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     <script>
     document.onkeydown = function(e) {
+        if (e.ctrlKey && e.keyCode === 83) {
+            e.preventDefault();
+            console.log("Ctrl+S pressed")
+            var downloadLink = document.getElementById('download-link');
+            if (downloadLink) {
+                downloadLink.click();
+            }
+        }
         switch (e.keyCode) {
             case 37:
                 // left arrow key
