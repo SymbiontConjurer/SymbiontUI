@@ -1,40 +1,45 @@
+from typing import Optional
 from flask import Flask, request, render_template, send_from_directory, send_file, redirect, url_for
 import os
 import argparse
 import imghdr
 import png
-from image_repository import ImageRepository, ImageData
+from image_repository import ImageRepository, Image
 
 app = Flask(__name__)
+image_repository : Optional[ImageRepository] = None
 
 @app.route('/')
 def index():
-    selected_image = request.args.get('image')
+    selected_image_relpath = request.args.get('image')
     selected_category = request.args.get('category', 'images')  # Added: selected category is taken from query param
-
-    image_repository = ImageRepository(app.config['image_dir'])
     images = image_repository.list(category=selected_category)  # Updated: only images from the selected category are displayed
-
-    if selected_image and selected_image not in [image.name for image in images]:
-        return redirect(url_for('index'))  # redirect to index page without selected image
-
-    next_image = prev_image = None
-    if selected_image and selected_image in [image.name for image in images]:
-        curr_index = [image.name for image in images].index(selected_image)
-        if curr_index < len(images) - 1:
-            next_image = images[curr_index + 1].name
-        if curr_index > 0:
-            prev_image = images[curr_index - 1].name
+    
+    selected_image_index = None
+    selected_image = None
+    next_image_relpath = prev_image_relpath = None
+    image_relpaths = [image.relpath for image in images]
+    print(image_relpaths)
+    if selected_image_relpath:
+        if selected_image_relpath not in image_relpaths:
+            print("Redirecting to index page")
+            return redirect(url_for('index'))  # redirect to index page without selected image
+        else:
+            selected_image_index = image_relpaths.index(selected_image_relpath)
+            selected_image = images[selected_image_index]
+            if selected_image_index < len(images) - 1:
+                next_image_relpath = images[selected_image_index + 1].relpath
+            if selected_image_index > 0:
+                prev_image_relpath = images[selected_image_index - 1].relpath
 
     image_metadata = None
     png_chunks = None
     if selected_image:
-        image_path = os.path.join(app.config['image_dir'], selected_image)
-        image_metadata = os.stat(image_path)
+        image_metadata = os.stat(selected_image.abspath)
 
-        if imghdr.what(image_path) == 'png':
+        if imghdr.what(selected_image.abspath) == 'png':
             png_chunks = {}
-            reader = png.Reader(filename=image_path)
+            reader = png.Reader(filename=selected_image.abspath)
             for chunk in reader.chunks():
                 if chunk[0] == b'tEXt':
                     key, value = chunk[1].split(b'\x00')
@@ -45,8 +50,8 @@ def index():
         images=images,
         selected_image=selected_image,
         image_metadata=image_metadata,
-        next_image=next_image,
-        prev_image=prev_image,
+        next_image=next_image_relpath,
+        prev_image=prev_image_relpath,
         png_chunks=png_chunks,
         categories=image_repository.categories(),  # Updated: pass all categories to the template
         selected_category=selected_category,  # Updated: pass selected category to the template
@@ -75,4 +80,5 @@ if __name__ == '__main__':
         exit(1)
 
     app.config['image_dir'] = os.path.abspath(image_dir)
+    image_repository = ImageRepository(app.config['image_dir'])
     app.run(debug=True, port=args.port)

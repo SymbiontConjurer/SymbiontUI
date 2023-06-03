@@ -88,3 +88,7 @@ a:visited {
 a:hover {
     text-decoration: underline;
 }
+
+.selected-category {
+    font-weight: bold;
+}

@@ -35,22 +35,21 @@
         <h2>Images</h2>
         <div class="categories">  <!-- Added: category links -->
             {% for category in categories %}
-            <a href="/?category={{category}}"
-               class="{% if category == selected_category %}selected{% endif %}">{{category}}</a>
+            <a class="{{'selected-category' if category == selected_category else ''}}" href="/?category={{category}}">{{category}}</a>
             {% endfor %}
         </div>
         <ul>
             {% for image in images %}
-            <li><a href="/?image={{image.name}}&category={{selected_category}}">{{image.name}}</a></li>
+            <li><a href="/?image={{image.relpath}}&category={{selected_category}}">{{image.name}}</a></li>
             {% endfor %}
         </ul>
     </div>
     <div class="column selected-image-column">
         {% if selected_image %}
-        <h2>{{selected_image}}</h2>
-        <img src="/image?image={{selected_image}}" alt="Selected Image">
+        <h2>{{selected_image.name}}</h2>
+        <img src="/image?image={{selected_image.relpath}}" alt="Selected Image">
         <div>
-            <a id="download-link" href="/download?image={{selected_image}}">Save</a>
+            <a id="download-link" href="/download?image={{selected_image.relpath}}">Save</a>
             {% if prev_image %}
             <a href="/?image={{prev_image}}&category={{selected_category}}">Prev</a>
             {% endif %}
