@@ -3,27 +3,28 @@ import os
 import argparse
 import imghdr
 import png
-from image_repository import ImageRepository
+from image_repository import ImageRepository, ImageData
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     selected_image = request.args.get('image')
+    selected_category = request.args.get('category', 'images')  # Added: selected category is taken from query param
 
     image_repository = ImageRepository(app.config['image_dir'])
-    images = image_repository.list()
+    images = image_repository.list(category=selected_category)  # Updated: only images from the selected category are displayed
 
-    if selected_image and selected_image not in images:
+    if selected_image and selected_image not in [image.name for image in images]:
         return redirect(url_for('index'))  # redirect to index page without selected image
 
     next_image = prev_image = None
-    if selected_image and selected_image in images:
-        curr_index = images.index(selected_image)
+    if selected_image and selected_image in [image.name for image in images]:
+        curr_index = [image.name for image in images].index(selected_image)
         if curr_index < len(images) - 1:
-            next_image = images[curr_index + 1]
+            next_image = images[curr_index + 1].name
         if curr_index > 0:
-            prev_image = images[curr_index - 1]
+            prev_image = images[curr_index - 1].name
 
     image_metadata = None
     png_chunks = None
@@ -47,6 +48,8 @@ def index():
         next_image=next_image,
         prev_image=prev_image,
         png_chunks=png_chunks,
+        categories=image_repository.categories(),  # Updated: pass all categories to the template
+        selected_category=selected_category,  # Updated: pass selected category to the template
     )
 
 @app.route('/image')
