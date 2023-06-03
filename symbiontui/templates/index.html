@@ -2,65 +2,7 @@
 <html>
 <head>
     <title>Image Viewer</title>
-    <style>
-    body {
-        background-color: #111111;
-        color: #ffffff;
-        line-height: 1.5;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .column {
-        float: left;
-        width: 33.33%;
-        overflow: auto;  /* Add scrollbar to the image list */
-        height: 90vh;
-    }
-
-    .image-column {
-        float: left;
-        width: 33.33%;
-        height: 90vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .row::after {
-        content: "";
-        clear: both;
-        display: table;
-    }
-
-    img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-    }
-
-    h2, h3, p {
-        color: #ffffff;
-    }
-
-    a {
-        color: #57d8ff;
-        text-decoration: none;
-    }
-
-    a:visited {
-        font-weight: bold;
-        color: #2b6374;
-    }
-    
-    a:hover {
-        text-decoration: underline;
-    }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     <script>
     document.onkeydown = function(e) {
         switch (e.keyCode) {
@@ -99,7 +41,7 @@
             {% endfor %}
         </ul>
     </div>
-    <div class="image-column">
+    <div class="column image-column">
         {% if selected_image %}
         <h2>{{selected_image}}</h2>
         <img src="/image?dir={{current_dir}}&image={{selected_image}}" alt="Selected Image">

@@ -1,0 +1,50 @@
+body {
+    background-color: #111111;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.column {
+    float: left;
+    width: 33.33%;
+    overflow: auto;
+    height: 90vh;
+}
+
+.image-column {
+    width: auto;
+    max-width: 100%;
+}
+
+.row::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+h2, h3, p {
+    color: #ffffff;
+}
+
+a {
+    color: #57d8ff;
+    text-decoration: none;
+}
+
+a:visited {
+    font-weight: bold;
+    color: #2b6374;
+}
+
+a:hover {
+    text-decoration: underline;
+}
