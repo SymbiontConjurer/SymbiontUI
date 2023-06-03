@@ -9,13 +9,13 @@
             case 37:
                 // left arrow key
                 {% if prev_image %}
-                window.location.href = '/?dir={{current_dir}}&image={{prev_image}}';
+                window.location.href = '/?image={{prev_image}}';
                 {% endif %}
                 break;
             case 39:
                 // right arrow key
                 {% if next_image %}
-                window.location.href = '/?dir={{current_dir}}&image={{next_image}}';
+                window.location.href = '/?image={{next_image}}';
                 {% endif %}
                 break;
         }
@@ -25,33 +25,24 @@
 <body>
 <div class="row">
     <div class="column">
-        <h2>Directories</h2>
-        <ul>
-            {% if current_dir != image_dir %}
-            <li><a href="/?dir={{current_dir}}/..">...</a></li>
-            {% endif %}
-            {% for directory in directories %}
-            <li><a href="/?dir={{current_dir}}/{{directory}}">{{directory}}</a></li>
-            {% endfor %}
-        </ul>
         <h2>Images</h2>
         <ul>
             {% for image in images %}
-            <li><a href="/?dir={{current_dir}}&image={{image}}">{{image}}</a></li>
+            <li><a href="/?image={{image}}">{{image}}</a></li>
             {% endfor %}
         </ul>
     </div>
     <div class="column image-column">
         {% if selected_image %}
         <h2>{{selected_image}}</h2>
-        <img src="/image?dir={{current_dir}}&image={{selected_image}}" alt="Selected Image">
+        <img src="/image?image={{selected_image}}" alt="Selected Image">
         <div>
-            <a href="/download?dir={{current_dir}}&image={{selected_image}}">Save</a>
+            <a href="/download?image={{selected_image}}">Save</a>
             {% if prev_image %}
-            <a href="/?dir={{current_dir}}&image={{prev_image}}">Prev</a>
+            <a href="/?image={{prev_image}}">Prev</a>
             {% endif %}
             {% if next_image %}
-            <a href="/?dir={{current_dir}}&image={{next_image}}">Next</a>
+            <a href="/?image={{next_image}}">Next</a>
             {% endif %}
         </div>
         {% else %}

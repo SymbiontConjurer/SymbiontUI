@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_from_directory, send_file
+from flask import Flask, request, render_template, send_from_directory, send_file, redirect, url_for
 import os
 import argparse
 import imghdr
@@ -22,18 +22,12 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     selected_image = request.args.get('image')
-    current_dir = request.args.get('dir', app.config['image_dir'])
-    current_dir = os.path.abspath(current_dir)  # Ensure directory path is absolute
-    if not os.path.commonpath([app.config['image_dir'], current_dir]).startswith(app.config['image_dir']):
-        # Prevent directory traversal attacks
-        current_dir = app.config['image_dir']
 
-    image_repository = ImageRepository(current_dir)
+    image_repository = ImageRepository(app.config['image_dir'])
     images = image_repository.list()
-    files_and_dirs = os.listdir(current_dir)
-    directories = sorted(
-        [f for f in files_and_dirs if os.path.isdir(os.path.join(current_dir, f))],
-    )
+
+    if selected_image and selected_image not in images:
+        return redirect(url_for('index'))  # redirect to index page without selected image
 
     next_image = prev_image = None
     if selected_image and selected_image in images:
@@ -46,7 +40,7 @@ def index():
     image_metadata = None
     png_chunks = None
     if selected_image:
-        image_path = os.path.join(current_dir, selected_image)
+        image_path = os.path.join(app.config['image_dir'], selected_image)
         image_metadata = os.stat(image_path)
 
         if imghdr.what(image_path) == 'png':
@@ -59,27 +53,23 @@ def index():
 
     return render_template(
         "index.html",
-        directories=directories,
         images=images,
         selected_image=selected_image,
         image_metadata=image_metadata,
-        current_dir=current_dir,
         next_image=next_image,
         prev_image=prev_image,
         png_chunks=png_chunks,
-        image_dir=app.config['image_dir'],
     )
+
 @app.route('/image')
 def serve_image():
     image_path = request.args.get('image')
-    dir_path = request.args.get('dir', app.config['image_dir'])
-    return send_from_directory(dir_path, image_path)
+    return send_from_directory(app.config['image_dir'], image_path)
 
 @app.route('/download')
 def download_image():
     image_path = request.args.get('image')
-    dir_path = request.args.get('dir', app.config['image_dir'])
-    file_path = os.path.join(dir_path, image_path)
+    file_path = os.path.join(app.config['image_dir'], image_path)
     return send_file(file_path, as_attachment=True)
 
 if __name__ == '__main__':
