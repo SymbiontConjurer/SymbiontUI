@@ -2,33 +2,45 @@ body {
     background-color: #111111;
     color: #ffffff;
     line-height: 1.5;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
 }
 
 .column {
-    float: left;
-    width: 33.33%;
+    padding: 10px;
+    border: 1px solid #444444;
+}
+
+.image-list-column {
+    max-width: 300px;
+    width: fit-content;
     overflow: auto;
-    height: 90vh;
 }
 
-.image-column {
-    width: auto;
-    max-width: 100%;
+.metadata-column {
+    width: 300px;
 }
 
-.row::after {
-    content: "";
-    clear: both;
-    display: table;
+.selected-image-column {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 img {
     max-width: 100%;
     max-height: 100%;
-    width: auto;
-    height: auto;
-    display: block;
-    margin: 0 auto;
+    object-fit: contain;
 }
 
 h2, h3, p {

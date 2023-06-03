@@ -23,8 +23,8 @@
     </script>
 </head>
 <body>
-<div class="row">
-    <div class="column">
+<div class="container">
+    <div class="column image-list-column">
         <h2>Images</h2>
         <ul>
             {% for image in images %}
@@ -32,7 +32,7 @@
             {% endfor %}
         </ul>
     </div>
-    <div class="column image-column">
+    <div class="column selected-image-column">
         {% if selected_image %}
         <h2>{{selected_image}}</h2>
         <img src="/image?image={{selected_image}}" alt="Selected Image">
@@ -49,7 +49,7 @@
         <p>No image selected.</p>
         {% endif %}
     </div>
-    <div class="column">
+    <div class="column metadata-column">
         <h2>Image Metadata</h2>
         {% if image_metadata %}
         <p>Size: {{image_metadata.st_size}} bytes</p>
