@@ -9,8 +9,11 @@
             e.preventDefault();
             console.log("Ctrl+S pressed")
             var downloadLink = document.getElementById('download-link');
+            console.log("1")
             if (downloadLink) {
+                console.log("2")
                 downloadLink.click();
+                console.log("3")
             }
         }
         switch (e.keyCode) {
@@ -45,7 +48,7 @@
         <h2>{{selected_image}}</h2>
         <img src="/image?image={{selected_image}}" alt="Selected Image">
         <div>
-            <a href="/download?image={{selected_image}}">Save</a>
+            <a id="download-link" href="/download?image={{selected_image}}">Save</a>
             {% if prev_image %}
             <a href="/?image={{prev_image}}">Prev</a>
             {% endif %}
