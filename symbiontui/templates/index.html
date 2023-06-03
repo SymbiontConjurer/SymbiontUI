@@ -7,13 +7,9 @@
     document.onkeydown = function(e) {
         if (e.ctrlKey && e.keyCode === 83) {
             e.preventDefault();
-            console.log("Ctrl+S pressed")
             var downloadLink = document.getElementById('download-link');
-            console.log("1")
             if (downloadLink) {
-                console.log("2")
                 downloadLink.click();
-                console.log("3")
             }
         }
         switch (e.keyCode) {
