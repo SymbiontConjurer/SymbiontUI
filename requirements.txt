@@ -1,2 +1,4 @@
 pypng
 flask
+mypy
+black
