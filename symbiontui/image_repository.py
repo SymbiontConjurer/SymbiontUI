@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Set
 import os
 import imghdr
+from datetime import datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -12,6 +13,8 @@ class Image:
     abspath: str
     tags: List[str]
     category: str
+    created: datetime
+    last_modified: datetime
 
 class ImageChangeHandler(FileSystemEventHandler):
     def __init__(self, repository):
@@ -51,13 +54,18 @@ class ImageRepository:
                     self.add_image(os.path.join(root, file))
 
     def add_image(self, image_path: str):
+        stat = os.stat(image_path)
+        created = datetime.fromtimestamp(stat.st_ctime)
+        last_modified = datetime.fromtimestamp(stat.st_mtime)
         rel_path = os.path.join(os.path.relpath(os.path.dirname(image_path), self.directory), os.path.basename(image_path))
         self.images[rel_path] = Image(
             os.path.splitext(os.path.basename(image_path))[0],
             rel_path,
             image_path,
             [],
-            self._get_image_category(image_path)
+            self._get_image_category(image_path),
+            created,
+            last_modified
         )
 
     def remove_image(self, image_path: str):
@@ -70,9 +78,10 @@ class ImageRepository:
         self.add_image(image_path)
 
     def list(self, category: Optional[str] = None) -> List[Image]:
-        if not category:
-            return list(self.images.values())
-        return [image for image in self.images.values() if category in image.category]
+        images = list(self.images.values())
+        if category:
+            images = [image for image in images if category in image.category]
+        return sorted(images, key=lambda image: image.last_modified, reverse=True)
 
     def categories(self) -> Set[str]:
         return {"image", "grid"}
