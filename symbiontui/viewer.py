@@ -5,6 +5,7 @@ import argparse
 import imghdr
 import png
 from image_repository import ImageRepository, Image
+import pathlib
 
 app = Flask(__name__)
 image_repository : Optional[ImageRepository] = None
@@ -19,10 +20,8 @@ def index():
     selected_image = None
     next_image_relpath = prev_image_relpath = None
     image_relpaths = [image.relpath for image in images]
-    print(image_relpaths)
     if selected_image_relpath:
         if selected_image_relpath not in image_relpaths:
-            print("Redirecting to index page")
             return redirect(url_for('index'))  # redirect to index page without selected image
         else:
             selected_image_index = image_relpaths.index(selected_image_relpath)
@@ -60,7 +59,12 @@ def index():
 @app.route('/image')
 def serve_image():
     image_path = request.args.get('image')
-    return send_from_directory(app.config['image_dir'], image_path)
+    full_path = pathlib.Path(os.path.join(app.config['image_dir'], image_path))
+    if not full_path.is_file():
+        return "File not found", 404
+    filename = full_path.name
+    directory = full_path.parent
+    return send_from_directory(directory, filename)
 
 @app.route('/download')
 def download_image():
