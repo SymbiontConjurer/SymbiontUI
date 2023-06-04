@@ -48,7 +48,6 @@
     </div>
     <div class="column selected-image-column">
         {% if selected_image %}
-        <h2>{{selected_image.name}}</h2>
         <img src="/image?image={{selected_image.relpath}}" alt="Selected Image">
         <div>
             <a id="download-link" href="/download?image={{selected_image.relpath}}">Save</a>
@@ -64,7 +63,8 @@
         {% endif %}
     </div>
     <div class="column metadata-column">
-        <h2>Image Metadata</h2>
+        <h2>Image Properties</h2>
+        <p>{{selected_image.abspath}}</p>
         {% if image_metadata %}
         <p>Size: {{image_metadata.st_size}} bytes</p>
         <p>Created: {{image_metadata.st_ctime}}</p>

@@ -21,16 +21,22 @@ class ImageChangeHandler(FileSystemEventHandler):
         self.repository = repository
 
     def on_created(self, event):
-        if not event.is_directory and imghdr.what(event.src_path):
-            self.repository.add_image(event.src_path)
+        try:
+            if not event.is_directory and imghdr.what(event.src_path):
+                self.repository.add_image(event.src_path)
+        except Exception as e:
+            pass
 
     def on_deleted(self, event):
         if not event.is_directory:
             self.repository.remove_image(event.src_path)
 
     def on_modified(self, event):
-        if not event.is_directory and imghdr.what(event.src_path):
-            self.repository.update_image(event.src_path)
+        try:
+            if not event.is_directory and imghdr.what(event.src_path):
+                self.repository.update_image(event.src_path)
+        except Exception as e:
+            pass
 
 class ImageRepository:
     def __init__(self, directory: str):
