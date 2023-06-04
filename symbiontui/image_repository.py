@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Set
+from typing import List, Optional, Set
 import os
 import imghdr
 
@@ -23,25 +23,25 @@ class ImageRepository:
         return ['image']
 
     def _load_images(self) -> List[Image]:
-        files_and_dirs = os.listdir(self.directory)
-        images = sorted(
-            [
-                Image(
-                    os.path.splitext(f)[0],
-                    os.path.join(f), # Relative path
-                    os.path.join(self.directory, f),  # Absolute path
-                    [],
-                    self._get_image_category(os.path.join(self.directory, f))
-                )
-                for f in files_and_dirs
-                if os.path.isfile(os.path.join(self.directory, f)) and imghdr.what(os.path.join(self.directory, f))
-            ],
-            key=lambda x: os.stat(x.abspath).st_ctime,
-            reverse=True  # Descending order
-        )
+        images = []
+        for root, dirs, files in os.walk(self.directory):
+            for file in files:
+                if os.path.isfile(os.path.join(root, file)) and imghdr.what(os.path.join(root, file)):
+                    rel_path = os.path.join(os.path.relpath(root, self.directory), file)
+                    images.append(
+                        Image(
+                            os.path.splitext(file)[0],
+                            rel_path,
+                            os.path.join(root, file),
+                            [],
+                            self._get_image_category(os.path.join(root, file))
+                        )
+                    )
+        # Sort the images
+        images.sort(key=lambda x: os.stat(x.abspath).st_ctime, reverse=True)
         return images
 
-    def list(self, category: str = None) -> List[Image]:
+    def list(self, category: Optional[str] = None) -> List[Image]:
         if not category:
             return self.images
         return [image for image in self.images if category in image.category]
