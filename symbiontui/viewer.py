@@ -21,15 +21,16 @@ def index():
     next_image_relpath = prev_image_relpath = None
     image_relpaths = [image.relpath for image in images]
     if selected_image_relpath:
-        if selected_image_relpath not in image_relpaths:
-            return redirect(url_for('index'))  # redirect to index page without selected image
-        else:
+        if selected_image_relpath in image_relpaths:
             selected_image_index = image_relpaths.index(selected_image_relpath)
             selected_image = images[selected_image_index]
             if selected_image_index < len(images) - 1:
                 next_image_relpath = images[selected_image_index + 1].relpath
             if selected_image_index > 0:
                 prev_image_relpath = images[selected_image_index - 1].relpath
+        else:
+            print('Selected image not found.')
+
 
     image_metadata = None
     png_chunks = None
@@ -49,8 +50,8 @@ def index():
         images=images,
         selected_image=selected_image,
         image_metadata=image_metadata,
-        next_image=next_image_relpath,
-        prev_image=prev_image_relpath,
+        next_image_relpath=next_image_relpath,
+        prev_image_relpath=prev_image_relpath,
         png_chunks=png_chunks,
         categories=image_repository.categories(),  # Updated: pass all categories to the template
         selected_category=selected_category,  # Updated: pass selected category to the template

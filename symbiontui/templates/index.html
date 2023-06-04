@@ -14,15 +14,17 @@
         }
         switch (e.keyCode) {
             case 37:
+                console.log('left arrow key')
                 // left arrow key
-                {% if prev_image %}
-                window.location.href = '/?image={{prev_image}}&category={{selected_category}}';
+                {% if prev_image_relpath %}
+                window.location.href = String.raw`/?image={{prev_image_relpath}}&category={{selected_category}}`;
                 {% endif %}
                 break;
             case 39:
+                console.log('right arrow key')
                 // right arrow key
-                {% if next_image %}
-                window.location.href = '/?image={{next_image}}&category={{selected_category}}';
+                {% if next_image_relpath %}
+                window.location.href = String.raw`/?image={{next_image_relpath}}&category={{selected_category}}`;
                 {% endif %}
                 break;
         }
@@ -50,11 +52,11 @@
         <img src="/image?image={{selected_image.relpath}}" alt="Selected Image">
         <div>
             <a id="download-link" href="/download?image={{selected_image.relpath}}">Save</a>
-            {% if prev_image %}
-            <a href="/?image={{prev_image}}&category={{selected_category}}">Prev</a>
+            {% if prev_image_relpath %}
+            <a href="/?image={{prev_image_relpath}}&category={{selected_category}}">Prev</a>
             {% endif %}
-            {% if next_image %}
-            <a href="/?image={{next_image}}&category={{selected_category}}">Next</a>
+            {% if next_image_relpath %}
+            <a href="/?image={{next_image_relpath}}&category={{selected_category}}">Next</a>
             {% endif %}
         </div>
         {% else %}
