@@ -1,11 +1,15 @@
+from datetime import datetime
 from typing import Optional
 from flask import Flask, request, render_template, send_from_directory, send_file, redirect, url_for
 import os
 import argparse
 import imghdr
 import png
+import pytz
 from image_repository import ImageRepository, Image
 import pathlib
+from tzlocal import get_localzone
+
 
 from automatic1111 import Automatic1111
 
@@ -22,6 +26,21 @@ def index():
 def models():
     models = automatic1111.get_models()
     return render_template("models.html", models=models)
+
+def convert_unix_to_local(unix_timestamp):
+    # convert the unix timestamp to datetime
+    utc_time = datetime.utcfromtimestamp(unix_timestamp)
+    
+    # set the timezone to UTC
+    utc_time = pytz.utc.localize(utc_time)
+
+    # get the local timezone
+    local_tz = get_localzone()
+
+    # convert the UTC datetime to local timezone
+    local_time = utc_time.astimezone(local_tz)
+
+    return local_time
 
 @app.route('/library')
 def library():
@@ -48,7 +67,12 @@ def library():
     image_metadata = None
     png_chunks = None
     if selected_image:
-        image_metadata = os.stat(selected_image.abspath)
+        stats = os.stat(selected_image.abspath)
+        image_metadata = {
+            'created': convert_unix_to_local(stats.st_ctime),
+            'modified': convert_unix_to_local(stats.st_mtime),
+            'size': stats.st_size
+        }
 
         if imghdr.what(selected_image.abspath) == 'png':
             png_chunks = {}
