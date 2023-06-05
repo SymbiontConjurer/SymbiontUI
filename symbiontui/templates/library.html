@@ -63,8 +63,8 @@
         <p>{{selected_image.abspath}}</p>
         {% if image_metadata %}
         <p>Size: {{image_metadata.size}} bytes</p>
-        <p>Created: {{image_metadata.created}}</p>
-        <p>Modified: {{image_metadata.modified}}</p>
+        <p>Created: {{image_metadata.created.strftime('%Y-%m-%d %I:%M %p')}}</p>
+        <p>Modified: {{image_metadata.modified.strftime('%Y-%m-%d %I:%M %p')}}</p>
         {% endif %}
         {% if png_chunks %}
         <h2>PNG Chunks</h2>
