@@ -1,83 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Image Viewer</title>
+    <title>Symbiont UI</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    <script>
-    document.onkeydown = function(e) {
-        if (e.ctrlKey && e.keyCode === 83) {
-            e.preventDefault();
-            var downloadLink = document.getElementById('download-link');
-            if (downloadLink) {
-                downloadLink.click();
-            }
-        }
-        switch (e.keyCode) {
-            case 37:
-                console.log('left arrow key')
-                // left arrow key
-                {% if prev_image_relpath %}
-                window.location.href = String.raw`/?image={{prev_image_relpath}}&category={{selected_category}}`;
-                {% endif %}
-                break;
-            case 39:
-                console.log('right arrow key')
-                // right arrow key
-                {% if next_image_relpath %}
-                window.location.href = String.raw`/?image={{next_image_relpath}}&category={{selected_category}}`;
-                {% endif %}
-                break;
-        }
-    };
-    </script>
 </head>
 <body>
-<div class="container">
-    <div class="column image-list-column">
-        <h2>Images</h2>
-        <div class="categories">  <!-- Added: category links -->
-            {% for category in categories %}
-            <a class="{{'selected-category' if category == selected_category else ''}}" href="/?category={{category}}">{{category}}</a>
-            {% endfor %}
-        </div>
+    <div>
         <ul>
-            {% for image in images %}
-            <li><a href="/?image={{image.relpath}}&category={{selected_category}}">{{image.name}}</a></li>
-            {% endfor %}
+            <li><a href="/library">Image Library</a></li>
+            <li><a href="/models">Models</a></li>
         </ul>
     </div>
-    <div class="column selected-image-column">
-        {% if selected_image %}
-        <img src="/image?image={{selected_image.relpath}}" alt="Selected Image">
-        <div>
-            <a id="download-link" href="/download?image={{selected_image.relpath}}">Save</a>
-            {% if prev_image_relpath %}
-            <a href="/?image={{prev_image_relpath}}&category={{selected_category}}">Prev</a>
-            {% endif %}
-            {% if next_image_relpath %}
-            <a href="/?image={{next_image_relpath}}&category={{selected_category}}">Next</a>
-            {% endif %}
-        </div>
-        {% else %}
-        <p>No image selected.</p>
-        {% endif %}
-    </div>
-    <div class="column metadata-column">
-        <h2>Image Properties</h2>
-        <p>{{selected_image.abspath}}</p>
-        {% if image_metadata %}
-        <p>Size: {{image_metadata.st_size}} bytes</p>
-        <p>Created: {{image_metadata.st_ctime}}</p>
-        <p>Modified: {{image_metadata.st_mtime}}</p>
-        {% endif %}
-        {% if png_chunks %}
-        <h2>PNG Chunks</h2>
-        {% for key, value in png_chunks.items() %}
-        <h3>{{key}}</h3>
-        <p>{{value}}</p>
-        {% endfor %}
-        {% endif %}
-    </div>
-</div>
 </body>
 </html>

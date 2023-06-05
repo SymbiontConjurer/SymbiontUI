@@ -10,7 +10,15 @@ import pathlib
 app = Flask(__name__)
 image_repository : Optional[ImageRepository] = None
 
-@app.route('/')
+@app.route('/index')
+def index():
+    return render_template("index.html")
+
+@app.route('/models')
+def models():
+    return render_template("models.html")
+
+@app.route('/library')
 def index():
     selected_image_relpath = request.args.get('image')
     selected_category = request.args.get('category', 'images')  # Added: selected category is taken from query param
@@ -46,7 +54,7 @@ def index():
                     png_chunks[key.decode()] = value.decode()
 
     return render_template(
-        "index.html",
+        "library.html",
         images=images,
         selected_image=selected_image,
         image_metadata=image_metadata,
@@ -72,6 +80,7 @@ def download_image():
     image_path = request.args.get('image')
     file_path = os.path.join(app.config['image_dir'], image_path)
     return send_file(file_path, as_attachment=True)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
