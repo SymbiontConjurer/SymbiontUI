@@ -7,19 +7,24 @@ import png
 from image_repository import ImageRepository, Image
 import pathlib
 
+from automatic1111 import Automatic1111
+
 app = Flask(__name__)
 image_repository : Optional[ImageRepository] = None
+automatic1111 : Optional[Automatic1111] = None
 
+@app.route('/')
 @app.route('/index')
 def index():
     return render_template("index.html")
 
 @app.route('/models')
 def models():
-    return render_template("models.html")
+    models = automatic1111.get_models()
+    return render_template("models.html", models=models)
 
 @app.route('/library')
-def index():
+def library():
     selected_image_relpath = request.args.get('image')
     selected_category = request.args.get('category', 'images')  # Added: selected category is taken from query param
     images = image_repository.list(category=selected_category)  # Updated: only images from the selected category are displayed
@@ -84,15 +89,11 @@ def download_image():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dir', default=os.getcwd(), help='The directory containing images.')
+    parser.add_argument('--dir', default=os.getcwd(), help='The directory containing the sdwebui repo.')
     parser.add_argument('--port', default=7861, type=int, help='The port to run the server on.')
     args = parser.parse_args()
 
-    image_dir = args.dir
-    if not os.path.isdir(image_dir):
-        print(f'Invalid directory: {image_dir}')
-        exit(1)
-
-    app.config['image_dir'] = os.path.abspath(image_dir)
+    automatic1111 = Automatic1111(args.dir)
+    app.config['image_dir'] = os.path.abspath(automatic1111.image_output_path)
     image_repository = ImageRepository(app.config['image_dir'])
     app.run(debug=True, port=args.port)

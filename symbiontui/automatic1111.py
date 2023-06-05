@@ -1,10 +1,8 @@
 import os
 
 def is_automatic1111_path(path: str):
-    return os.path.isdir(path) and os.path.basename(path).startswith('stable-diffusion-webui')
-
-
-
+    abspath = os.path.abspath(path)
+    return os.path.isdir(abspath) and os.path.basename(abspath).startswith('stable-diffusion-webui')
 
 class Automatic1111(object):
     def __init__(self, base_path):

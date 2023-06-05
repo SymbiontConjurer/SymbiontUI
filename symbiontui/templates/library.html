@@ -4,28 +4,24 @@
     <title>Image Library</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     <script>
+        function clickLink(id) {
+            var link = document.getElementById(id);
+            if (link) {
+                link.click();
+            }
+        }
+
     document.onkeydown = function(e) {
         if (e.ctrlKey && e.keyCode === 83) {
             e.preventDefault();
-            var downloadLink = document.getElementById('download-link');
-            if (downloadLink) {
-                downloadLink.click();
-            }
+            clickLink('download-link');
         }
         switch (e.keyCode) {
             case 37:
-                console.log('left arrow key')
-                // left arrow key
-                {% if prev_image_relpath %}
-                window.location.href = String.raw`/?image={{prev_image_relpath}}&category={{selected_category}}`;
-                {% endif %}
+                clickLink('prev-link');
                 break;
             case 39:
-                console.log('right arrow key')
-                // right arrow key
-                {% if next_image_relpath %}
-                window.location.href = String.raw`/?image={{next_image_relpath}}&category={{selected_category}}`;
-                {% endif %}
+                clickLink('next-link');
                 break;
         }
     };
@@ -37,25 +33,25 @@
         <h2>Images</h2>
         <div class="categories">  <!-- Added: category links -->
             {% for category in categories %}
-            <a class="{{'selected-category' if category == selected_category else ''}}" href="/?category={{category}}">{{category}}</a>
+            <a class="{{'selected-category' if category == selected_category else ''}}" href="{{ url_for('library', category=category) }}">{{category}}</a>
             {% endfor %}
         </div>
         <ul>
             {% for image in images %}
-            <li><a href="/?image={{image.relpath}}&category={{selected_category}}">{{image.name}}</a></li>
+            <li><a href="{{ url_for('library', category=selected_category, image=image.relpath) }}">{{image.name}}</a></li>
             {% endfor %}
         </ul>
     </div>
     <div class="column selected-image-column">
         {% if selected_image %}
-        <img src="/image?image={{selected_image.relpath}}" alt="Selected Image">
+        <img src="{{ url_for('serve_image', image=selected_image.relpath )}}" alt="Selected Image">
         <div>
-            <a id="download-link" href="/download?image={{selected_image.relpath}}">Save</a>
+            <a id="download-link" href="{{ url_for('download_image', image=selected_image.path) }}">Save</a>
             {% if prev_image_relpath %}
-            <a href="/?image={{prev_image_relpath}}&category={{selected_category}}">Prev</a>
+            <a id="prev-link" href="{{ url_for('library', category=selected_category, image=prev_image_relpath) }}">Prev</a>
             {% endif %}
             {% if next_image_relpath %}
-            <a href="/?image={{next_image_relpath}}&category={{selected_category}}">Next</a>
+            <a id="next-link" href="{{ url_for('library', category=selected_category, image=next_image_relpath) }}">Next</a>
             {% endif %}
         </div>
         {% else %}
