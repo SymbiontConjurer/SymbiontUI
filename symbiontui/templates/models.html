@@ -6,14 +6,27 @@
 </head>
 <body>
     <div id="models">
-    {% for model_type, model_list in models %}
+    {% for model_type, model_list in models.items() %}
         <p class="model">
             <h2>{{model_type}}</h2>
-            <ul>
-                {% for model in model_list %}
-                <li>{{model.name}}</li>
-                {% endfor %}
-            </ul>
+
+            {% if model_list %}
+                <!-- Table of models based on dataclass -->
+                <table>
+                    <tr>
+                       <th>name</th>
+                       <th>file type</th>
+                    </tr>
+                    {% for model in model_list %}
+                    <tr>
+                        <td>{{model.name}}</td>
+                        <td>{{model.file_type}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No {{model_type}} models found.</p>
+            {% endif %}
         </p>
     {% endfor %}
     </div>
