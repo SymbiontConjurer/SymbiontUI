@@ -23,14 +23,13 @@ class ImageChangeHandler(FileSystemEventHandler):
     def __init__(self, repository):
         self.repository = repository
 
-    def _is_image(event):
+    def _is_image(self, event):
         # verify the event is not for a directory,
         # that the file has an image extension (to avoid tmp files),
         # and that the file is actually an image
         return (not event.is_directory and
             os.path.splitext(event.src_path)[1][1:] in IMAGE_EXTENSIONS and
             imghdr.what(event.src_path))
-
 
     def on_created(self, event):
         try:
