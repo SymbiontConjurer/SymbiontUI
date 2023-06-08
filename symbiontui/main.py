@@ -11,7 +11,7 @@ import pathlib
 from tzlocal import get_localzone
 
 
-from automatic1111 import Automatic1111
+from automatic1111 import Automatic1111, is_automatic1111_path
 
 app = Flask(__name__)
 image_repository : Optional[ImageRepository] = None
@@ -20,10 +20,12 @@ automatic1111 : Optional[Automatic1111] = None
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template("index.html")
+    return redirect(url_for('library'))
 
 @app.route('/models')
 def models():
+    if automatic1111 is None:
+        return render_template("not_automatic1111.html")
     models = automatic1111.get_models()
     return render_template("models.html", models=models)
 
@@ -117,7 +119,10 @@ if __name__ == '__main__':
     parser.add_argument('--port', default=7861, type=int, help='The port to run the server on.')
     args = parser.parse_args()
 
-    automatic1111 = Automatic1111(args.dir)
-    app.config['image_dir'] = os.path.abspath(automatic1111.image_output_path)
+    if is_automatic1111_path(args.dir):
+        automatic1111 = Automatic1111(args.dir)
+        app.config['image_dir'] = os.path.abspath(automatic1111.image_output_path)
+    else:
+        app.config['image_dir'] = os.path.abspath(args.dir)
     image_repository = ImageRepository(app.config['image_dir'])
     app.run(debug=True, port=args.port)

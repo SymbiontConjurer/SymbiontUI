@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import logging
 from typing import Dict, List, Optional, Set
 import os
 import imghdr
@@ -16,27 +17,38 @@ class Image:
     created: datetime
     last_modified: datetime
 
+IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'tif']
+
 class ImageChangeHandler(FileSystemEventHandler):
     def __init__(self, repository):
         self.repository = repository
 
+    def _is_image(event):
+        # verify the event is not for a directory,
+        # that the file has an image extension (to avoid tmp files),
+        # and that the file is actually an image
+        return (not event.is_directory and
+            os.path.splitext(event.src_path)[1][1:] in IMAGE_EXTENSIONS and
+            imghdr.what(event.src_path))
+
+
     def on_created(self, event):
         try:
-            if not event.is_directory and imghdr.what(event.src_path):
+            if self._is_image(event):
                 self.repository.add_image(event.src_path)
         except Exception as e:
-            pass
+            logging.exception("Error adding image to repository", exc_info=True)
 
     def on_deleted(self, event):
-        if not event.is_directory:
+        if self._is_image(event):
             self.repository.remove_image(event.src_path)
 
     def on_modified(self, event):
         try:
-            if not event.is_directory and imghdr.what(event.src_path):
+            if self._is_image(event):
                 self.repository.update_image(event.src_path)
         except Exception as e:
-            pass
+            logging.exception("Error updating image in repository", exc_info=True)
 
 class ImageRepository:
     def __init__(self, directory: str):
