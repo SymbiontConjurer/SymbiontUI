@@ -28,8 +28,7 @@ class ImageChangeHandler(FileSystemEventHandler):
         # that the file has an image extension (to avoid tmp files),
         # and that the file is actually an image
         return (not event.is_directory and
-            os.path.splitext(event.src_path)[1][1:] in IMAGE_EXTENSIONS and
-            imghdr.what(event.src_path))
+            os.path.splitext(event.src_path)[1][1:] in IMAGE_EXTENSIONS)
 
     def on_created(self, event):
         try:
