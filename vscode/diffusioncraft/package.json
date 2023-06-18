@@ -12,12 +12,16 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "diffusioncraft.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "diffusioncraft.generationParamsView",
+          "name": "Generation Params",
+          "when": "resourceExtname == .png"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
