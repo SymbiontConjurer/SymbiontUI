@@ -2,21 +2,29 @@ import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	const provider = new GenerationParamsView(context.extensionUri);
+	const provider = new GeneratedImageViewProvider(context.extensionUri);
 
 	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider(GenerationParamsView.viewType, provider));
+		vscode.window.registerCustomEditorProvider(GeneratedImageViewProvider.viewType, provider));
 }
 
-class GenerationParamsView implements vscode.WebviewViewProvider {
+class GeneratedImageViewProvider implements vscode.CustomReadonlyEditorProvider {
 
-	public static readonly viewType = 'diffusioncraft.generationParamsView';
+	public static readonly viewType = 'diffusioncraft.generatedImageView';
 
 	private _view?: vscode.WebviewView;
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
 	) { }
+
+	openCustomDocument(uri: vscode.Uri, openContext: vscode.CustomDocumentOpenContext, token: vscode.CancellationToken): vscode.CustomDocument | Thenable<vscode.CustomDocument> {
+		return {uri, dispose: () => {}}
+	}
+	
+	resolveCustomEditor(document: vscode.CustomDocument, webviewPanel: vscode.WebviewPanel, token: vscode.CancellationToken): void | Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 
 	public resolveWebviewView(
 		webviewView: vscode.WebviewView,

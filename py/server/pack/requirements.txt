@@ -2,3 +2,4 @@ diffusers
 torch
 torchvision
 torchaudio
+transformers
